@@ -30,12 +30,12 @@ export default {
   methods: {
     async getAnime() {
       const corsURL = 'https://cors-anywhere.herokuapp.com/';
-      const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=1';
+      const apiURL = 'https://data.coa.gov.tw/Service/OpenData/ODwsv/ODwsvTravelFood.aspx';
       const api = await axios.get(`${corsURL}${apiURL}`)
       let data = api.data
       console.log(data)
-      const anime_titles = data.map(a => a.title);
-      const anime_contents = data.map(a => a.endDate);
+      const anime_titles = data.map(a => a.Address);
+      const anime_contents = data.map(a => a.HostWords);
       const anime = [];
 			for (let i = 0; i < 10; i++) {
 				anime.push({
@@ -53,11 +53,11 @@ export default {
           console.log(window.scrollY+','+window.innerHeight+','+document.documentElement.scrollHeight)
           // this.getMore().then(value=>(this.anime_list=[...this.anime_list, ...value]));
           const corsURL = 'https://cors-anywhere.herokuapp.com/';
-          const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=1';
+          const apiURL = 'https://data.coa.gov.tw/Service/OpenData/ODwsv/ODwsvTravelFood.aspx';
           const api = await  axios.get(`${corsURL}${apiURL}`)
           let data = api.data
-          const anime_titles = data.map(a => a.title);
-          const anime_contents = data.map(a => a.endDate);
+          const anime_titles = data.map(a => a.Address);
+          const anime_contents = data.map(a => a.HostWords);
           const new_anime = [];
           let i = this.count;
           for ( let ii=i ;ii < i+10; ii++) {
@@ -131,8 +131,11 @@ main {
   padding: 0rem 15rem;
 }
 h3 {
+  display: flex;
   color: aliceblue;
   font-size: 20px;
+  justify-content: center;
   align-content: center;
+  margin-bottom: 10px;
 }
 </style>
