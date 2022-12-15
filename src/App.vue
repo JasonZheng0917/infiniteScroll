@@ -6,7 +6,7 @@
     <main>
       <Post v-for="(anime, i) in anime_list" :key="i" :anime="anime" />
     </main>
-    <h3>{{nodata}}</h3>
+    <h3>{{text}}</h3>
   </div>
 </template>
 
@@ -20,7 +20,8 @@ export default {
     return{
       anime_list: [],
       count: 10,
-      nodata:''
+      nodata: false,
+      text: ''
     };
   },
   components: {
@@ -29,70 +30,80 @@ export default {
   methods: {
     async getAnime() {
       const corsURL = 'https://cors-anywhere.herokuapp.com/';
-      const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=11';
+      const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=1';
       const api = await axios.get(`${corsURL}${apiURL}`)
       let data = api.data
       console.log(data)
-      // const anime_titles = data.map(a => a.sourceWebName);
-      // const anime_contents = data.map(a => a.descriptionFilterHtml);
-      // const anime = [];
-			// for (let i = 0; i < 10; i++) {
-			// 	anime.push({
-			// 		title: anime_titles[i],
-			// 		description: anime_contents[i]
-			// 	});
-			// }
-      // console.log(anime)
-			// return anime;
+      const anime_titles = data.map(a => a.title);
+      const anime_contents = data.map(a => a.endDate);
+      const anime = [];
+			for (let i = 0; i < 10; i++) {
+				anime.push({
+					title: anime_titles[i],
+					description: anime_contents[i]
+				});
+			}
+      console.log(anime)
+      console.log(this.count)
+			return anime;
     },
     async handlescroll() {
-      if (window.scrollY + window.innerHeight >= document.body.scrollHeight -5) {
-        console.log(window.scrollY+','+window.innerHeight+','+document.body.scrollHeight)
-        // this.getMore().then(value=>(this.anime_list=[...this.anime_list, ...value]));
-        const corsURL = 'https://cors-anywhere.herokuapp.com/';
-        const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=4';
-        const api = await  axios.get(`${corsURL}${apiURL}`)
-        let data = api.data
-        const anime_titles = data.map(a => a.sourceWebName);
-        const anime_contents = data.map(a => a.descriptionFilterHtml);
-        const new_anime = [];
-        let i = this.count;
-        for ( let ii=i ;ii < i+10; ii++) {
-          if(i+10<data.length){
-            new_anime.push({
-              title: anime_titles[ii],
-              description: anime_contents[ii]
-            });
-          }else{
-            this.nodata = 'nodata!'
-            break;
+      if (this.nodata === false) {
+        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+          console.log(window.scrollY+','+window.innerHeight+','+document.documentElement.scrollHeight)
+          // this.getMore().then(value=>(this.anime_list=[...this.anime_list, ...value]));
+          const corsURL = 'https://cors-anywhere.herokuapp.com/';
+          const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=1';
+          const api = await  axios.get(`${corsURL}${apiURL}`)
+          let data = api.data
+          const anime_titles = data.map(a => a.title);
+          const anime_contents = data.map(a => a.endDate);
+          const new_anime = [];
+          let i = this.count;
+          for ( let ii=i ;ii < i+10; ii++) {
+            if(i+10<data.length){
+              new_anime.push({
+                title: anime_titles[ii],
+                description: anime_contents[ii]
+              });
+            }else{
+              this.nodata = true
+              this.text = '沒資料囉！'
+              break;
+            }
           }
+          this.count+=10
+          console.log(this.count)
+          console.log(new_anime)
+          return this.anime_list=[...this.anime_list, ...new_anime];
         }
-        this.count+=10
-        console.log(this.count)
-        console.log(new_anime)
-        return this.anime_list=[...this.anime_list, ...new_anime];
-			}
+      }
     },
     // async getMore() {
     //   const corsURL = 'https://cors-anywhere.herokuapp.com/';
-    //   const apiURL = 'https://www.twtainan.net/data/shops_zh-tw.json';
-    //   const api = await axios.get(`${corsURL}${apiURL}`)
+    //   const apiURL = 'https://cloud.culture.tw/frontsite/trans/SearchShowAction.do?method=doFindTypeJ&category=1';
+    //   const api = await  axios.get(`${corsURL}${apiURL}`)
     //   let data = api.data
-    //   const anime_titles = data.map(a => a.name);
-    //   const anime_contents = data.map(a => a.introduction);
+    //   const anime_titles = data.map(a => a.title);
+    //   const anime_contents = data.map(a => a.endDate);
     //   const new_anime = [];
     //   let i = this.count;
-		// 	for ( let ii=i ;ii < i+10; ii++) {
-		// 		new_anime.push({
-		// 			title: anime_titles[ii],
-		// 			description: anime_contents[ii]
-		// 		});
-		// 	}
+    //   for ( let ii=i ;ii < i+10; ii++) {
+    //     if(i+10<data.length){
+    //       new_anime.push({
+    //         title: anime_titles[ii],
+    //         description: anime_contents[ii]
+    //       });
+    //     }else{
+    //       this.nodata = true;
+    //       this.text = '沒資料囉！';
+    //       break;
+    //     }
+    //   }
     //   this.count+=10
     //   console.log(this.count)
     //   console.log(new_anime)
-		// 	return new_anime;
+    //   return new_anime;
     // }
   },
   mounted() {
